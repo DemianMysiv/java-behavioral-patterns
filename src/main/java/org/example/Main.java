@@ -14,6 +14,6 @@ public class Main {
     }
 
     public static void runSituation2() {
-        // Ваш код для запуску Завдання 2
+        org.example.task2.Task2Demo.run();
     }
 }
