@@ -1,8 +1,11 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+<<<<<<< HEAD
 # Markdown personal settings
 /markdown.xml
+=======
+>>>>>>> 3a00132569541bc18c6c8cbac5595cd539e57467
 # Editor-based HTTP Client requests
 /httpRequests/
 # Ignored default folder with query files
