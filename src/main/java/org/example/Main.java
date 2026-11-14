@@ -11,7 +11,7 @@ public class Main {
     }
 
     public static void runSituation1() {
-        // Едік додасть свій код виклику сюди пізніше
+        org.example.task1.Task1Demo.run();
     }
 
     public static void runSituation2() {
