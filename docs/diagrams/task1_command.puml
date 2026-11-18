@@ -1,0 +1,76 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' ================= АБСТРАКТНИЙ ОБРОБНИК =================
+abstract class CheckHandler <<Handler>> {
+    # next: CheckHandler
+    + setNext(next: CheckHandler): CheckHandler
+    + check(passenger: Passenger): boolean
+    # {abstract} doCheck(passenger: Passenger): boolean
+}
+
+' ================= МОДЕЛЬ ДАНИХ =================
+class Passenger <<Model>> {
+    - name: String
+    - hasBoardingPass: boolean
+    - hasValidPassport: boolean
+    - baggageWeight: double
+    - isInternational: boolean
+    + Passenger(name: String, hasBoardingPass: boolean, hasValidPassport: boolean, baggageWeight: double, isInternational: boolean)
+    + getName(): String
+    + hasBoardingPass(): boolean
+    + hasValidPassport(): boolean
+    + getBaggageWeight(): double
+    + isInternational(): boolean
+}
+
+' ================= КОНКРЕТНІ ОБРОБНИКИ =================
+class BoardingPassCheck <<Concrete Handler>> {
+    # doCheck(passenger: Passenger): boolean
+}
+
+class PassportControlCheck <<Concrete Handler>> {
+    # doCheck(passenger: Passenger): boolean
+}
+
+class CustomsControlCheck <<Concrete Handler>> {
+    # doCheck(passenger: Passenger): boolean
+}
+
+class SecurityCheck <<Concrete Handler>> {
+    # doCheck(passenger: Passenger): boolean
+}
+
+class WeightCheck <<Concrete Handler>> {
+    - maxWeight: double
+    + WeightCheck(maxWeight: double)
+    # doCheck(passenger: Passenger): boolean
+}
+
+' ================= КЛІЄНТ =================
+class Task1Demo <<Client>> {
+    + {static} run(): void
+    - {static} buildInternationalChain(): CheckHandler
+    - {static} buildDomesticChain(): CheckHandler
+}
+
+' ================= ЗВ'ЯЗКИ (Relationships) =================
+
+' Спадкування абстрактного класу
+BoardingPassCheck --|> CheckHandler
+PassportControlCheck --|> CheckHandler
+CustomsControlCheck --|> CheckHandler
+SecurityCheck --|> CheckHandler
+WeightCheck --|> CheckHandler
+
+' Рекурсивна агрегація (посилання на наступну ланку в ланцюжку)
+CheckHandler o--> "0..1" CheckHandler : next
+
+' Залежності від моделі Passenger
+CheckHandler ..> Passenger : перевіряє
+
+' Залежності клієнта
+Task1Demo ..> CheckHandler : створює ланцюг
+Task1Demo ..> Passenger : створює об'єкти
+
+@enduml
