@@ -1,0 +1,96 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' ================= ІНТЕРФЕЙС КОМАНДИ =================
+interface ScheduleCommand <<Command>> {
+    + execute(): void
+    + undo(): void
+}
+
+' ================= ОТРИМУВАЧ (RECEIVER) =================
+class AirportSchedule <<Receiver>> {
+    - flightTimes: Map<String, String>
+    - flightGates: Map<String, String>
+    - flightStatus: Map<String, Boolean>
+    + addFlight(flightId: String, time: String, gate: String): void
+    + rescheduleFlight(flightId: String, newTime: String): void
+    + changeGate(flightId: String, newGate: String): void
+    + cancelFlight(flightId: String): void
+    + restoreFlight(flightId: String): void
+    + printSchedule(): void
+    - log(event: String): void
+}
+
+' ================= КОНКРЕТНІ КОМАНДИ =================
+class RescheduleCommand <<Concrete Command>> {
+    - schedule: AirportSchedule
+    - flightId: String
+    - oldTime: String
+    - newTime: String
+    + RescheduleCommand(schedule: AirportSchedule, flightId: String, oldTime: String, newTime: String)
+    + execute(): void
+    + undo(): void
+    - logRequest(event: String): void
+}
+
+class ChangeGateCommand <<Concrete Command>> {
+    - schedule: AirportSchedule
+    - flightId: String
+    - oldGate: String
+    - newGate: String
+    + ChangeGateCommand(schedule: AirportSchedule, flightId: String, oldGate: String, newGate: String)
+    + execute(): void
+    + undo(): void
+    - logRequest(event: String): void
+}
+
+class CancelFlightCommand <<Concrete Command>> {
+    - schedule: AirportSchedule
+    - flightId: String
+    + CancelFlightCommand(schedule: AirportSchedule, flightId: String)
+    + execute(): void
+    + undo(): void
+    - logRequest(event: String): void
+}
+
+' ================= ІНІЦІАТОР (INVOKER) =================
+class Dispatcher <<Invoker>> {
+    - history: Stack<ScheduleCommand>
+    - batchQueue: List<ScheduleCommand>
+    - actionJournal: List<String>
+    + executeAction(command: ScheduleCommand): void
+    + undoLastAction(): void
+    + queueAction(command: ScheduleCommand): void
+    + executeBatch(): void
+    + printJournal(): void
+    - log(event: String): void
+}
+
+' ================= КЛІЄНТ (CLIENT) =================
+class Task2Demo <<Client>> {
+    + {static} run(): void
+}
+
+' ================= ЗВ'ЯЗКИ (Relationships) =================
+
+' Реалізація інтерфейсу ScheduleCommand
+RescheduleCommand ..|> ScheduleCommand
+ChangeGateCommand ..|> ScheduleCommand
+CancelFlightCommand ..|> ScheduleCommand
+
+' Асоціація: конкретні команди посилаються на одного отримувача (Receiver)
+RescheduleCommand --> "1" AirportSchedule : schedule
+ChangeGateCommand --> "1" AirportSchedule : schedule
+CancelFlightCommand --> "1" AirportSchedule : schedule
+
+' Агрегація: Диспетчер зберігає колекції команд (історія та черга)
+Dispatcher o--> "0..*" ScheduleCommand : history / batchQueue
+
+' Залежності клієнта
+Task2Demo ..> AirportSchedule : створює
+Task2Demo ..> Dispatcher : використовує
+Task2Demo ..> RescheduleCommand : створює
+Task2Demo ..> ChangeGateCommand : створює
+Task2Demo ..> CancelFlightCommand : створює
+
+@enduml
